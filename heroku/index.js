@@ -25,4 +25,24 @@ app.get('/webhook', function(req, res) {
   res.send('<pre>' + JSON.stringify(received_updates, null, 2) + '</pre>');
 });
 
+app.get(['/webhook'], function(req, res) {
+  if (
+    req.query['hub.mode'] == 'subscribe' &&
+    req.query['hub.verify_token'] == token
+  ) {
+    res.send(req.query['hub.challenge']);
+  } else {
+    res.sendStatus(400);
+  }
+});
+
+app.post('/webhook', function(req, res) {
+  console.log('webhook request body:');
+  console.log(req.body);
+  // Process the webhook updates here
+  received_updates.unshift(req.body);
+  res.sendStatus(200);
+});
+
+
 app.listen();
